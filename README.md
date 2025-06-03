@@ -18,7 +18,7 @@ A secure, automated script that rotates your ProtonVPN WireGuard configuration d
 
 1. Download the `.deb` file:
    ```bash
-   wget https://github.com/YOUR_USERNAME/wireguard-rotator/releases/latest/download/wireguard-rotator_1.0_all.deb
+   wget https://github.com/radpi42/wireguard-rotator/releases/latest/download/wireguard-rotator_1.0_all.deb
    ```
 
 2. Install it:
