@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e  # Stop if any command fails
+set -e  # Stop on error
 
 # === Step 1: Define Variables ===
 PACKAGE_NAME="wireguard-rotator"
@@ -17,7 +17,7 @@ echo "Cleaning old builds..."
 rm -rf "$BUILD_DIR" "$OUT_DIR"
 mkdir -p "$DEBIAN_DIR" "$INSTALL_DIR" "$BIN_DIR" "$OUT_DIR"
 
-# === Step 3: Create control file (package metadata) ===
+# === Step 3: Create control file ===
 cat <<EOF > "$DEBIAN_DIR/control"
 Package: $PACKAGE_NAME
 Version: $VERSION
@@ -29,18 +29,31 @@ Maintainer: You <you@example.com>
 Description: WireGuard ProtonVPN auto-rotator with ntfy notifications and config.json support.
 EOF
 
-# === Step 4: Copy your files ===
+# === Step 4: Create postinst script ===
+cat <<'EOF' > "$DEBIAN_DIR/postinst"
+#!/bin/bash
+set -e
+
+# Create runtime directories in case they were stripped by packaging
+mkdir -p /etc/wireguard-rotator/logs
+mkdir -p /etc/wireguard-rotator/state
+mkdir -p /etc/wireguard-rotator/wg-configs/broken_configs
+
+exit 0
+EOF
+
+chmod 755 "$DEBIAN_DIR/postinst"
+
+# === Step 5: Copy your project files ===
 echo "Copying project files..."
 cp rotate-vpn.sh "$BIN_DIR/"
 cp config.json "$INSTALL_DIR/"
-mkdir -p "$INSTALL_DIR/wg-configs/broken_configs"
-mkdir -p "$INSTALL_DIR/logs"
-mkdir -p "$INSTALL_DIR/state"
+# (we no longer need to create empty folders here — postinst handles it)
 
-# === Step 5: Set permissions ===
+# === Step 6: Set file permissions ===
 chmod 755 "$BIN_DIR/rotate-vpn.sh"
 
-# === Step 6: Build the .deb package ===
+# === Step 7: Build the .deb ===
 DEB_FILE="$OUT_DIR/${PACKAGE_NAME}_${VERSION}_${ARCH}.deb"
 echo "Building package..."
 dpkg-deb --build "$BUILD_DIR" "$DEB_FILE"
