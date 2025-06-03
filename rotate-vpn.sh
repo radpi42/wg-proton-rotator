@@ -4,7 +4,7 @@
 # CONFIGURATION VARIABLES
 # =======================
 
-BASE_DIR="$HOME/wireguard-rotator"
+BASE_DIR="/etc/wireguard-rotator"
 WG_INTERFACE="wg0"
 WG_CONFIG_DIR="$BASE_DIR/wg-configs"
 BROKEN_DIR="$WG_CONFIG_DIR/broken_configs"
