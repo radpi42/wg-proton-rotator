@@ -1,0 +1,8 @@
+Package: wireguard-rotator
+Version: 1.1
+Section: base
+Priority: optional
+Architecture: all
+Depends: wireguard, jq, curl, resolvconf
+Maintainer: You <you@example.com>
+Description: WireGuard ProtonVPN auto-rotator with ntfy notifications and config.json support.
