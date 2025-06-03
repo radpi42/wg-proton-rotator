@@ -12,9 +12,15 @@ STATE_DIR="$BASE_DIR/state"
 LOG_DIR="$BASE_DIR/logs"
 LAST_USED_FILE="$STATE_DIR/.last_used_vpn"
 LAST_VALIDATION_FILE="$STATE_DIR/.last_config_validation"
-NTFY_TOPIC="vpn-rotate"
-NTFY_URL="https://alert.radlabv2.xyz"
 LOG_FILE="$LOG_DIR/rotate-vpn.log"
+
+CONFIG_FILE="$BASE_DIR/config.json"
+
+# Default values (in case config file is missing or malformed)
+NTFY_URL="https://ntfy.sh"
+NTFY_TOPIC="vpn-rotate"
+
+
 
 # =====================
 # UTILITY FUNCTIONS
@@ -28,6 +34,15 @@ send_ntfy() {
     local title="$1"
     local message="$2"
     curl -s -H "Title: $title" -d "$message" "$NTFY_URL/$NTFY_TOPIC" >/dev/null
+}
+
+load_config() {
+    if [[ -f "$CONFIG_FILE" ]]; then
+        NTFY_URL=$(jq -r '.ntfy_url // "https://ntfy.sh"' "$CONFIG_FILE")
+        NTFY_TOPIC=$(jq -r '.ntfy_topic // "vpn-rotate"' "$CONFIG_FILE")
+    else
+        log "⚠️ config.json not found. Using default ntfy values."
+    fi
 }
 
 validate_configs_once_daily() {
